@@ -1,4 +1,4 @@
-# Example of the RD compare
+# Example of the RD compare code
 
 Regression discontinuity estimation between two groups and their difference using bootstrap
 

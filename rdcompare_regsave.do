@@ -63,8 +63,8 @@ use "`mytable'", clear
 drop if strpos(var,"tstat") | strpos(var,"pval") | strpos(var,"dep") | var=="col"
 replace var = subinstr(var,"Robust_coef","`k'",1)
 replace var = "" if strpos(var,"_stderr")
-replace var="Ancho de banda" if var=="Ancho_banda"
-replace var="Observaciones" if var=="N"
+replace var="Bandwidth" if var=="Ancho_banda"
+replace var="Observations" if var=="N"
 tempfile b`k'
 save `b`k''
 restore

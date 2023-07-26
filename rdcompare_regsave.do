@@ -11,14 +11,14 @@ program rdcompare, eclass
     syntax varlist(numeric), mediana(varname numeric)
 	tokenize `varlist'
 	sum `mediana', detail
-	rdrobust `varlist' if `mediana' > `r(p50)'  &  `mediana'!=., c(0) p(1) masspoints(off) vce(hc1) bwselect(cercomb1) covs($covars) all
+	rdrobust `varlist' if `mediana' > `r(p50)'  &  `mediana'!=., c(0) p(1) vce(hc1) covs($covars) all
 	local bw=e(h_l)
 	tempvar touse1
 	gen `touse1'=e(sample)
 	matrix treat11 = e(b)
 	matrix treat1 = treat11[1,3]
 	sum `mediana', detail
-	rdrobust `varlist' if `mediana' <= `r(p50)'  &  `mediana'!=., c(0) p(1) masspoints(off) vce(hc1) bwselect(cercomb1) covs($covars) all
+	rdrobust `varlist' if `mediana' <= `r(p50)'  &  `mediana'!=., c(0) p(1) vce(hc1) covs($covars) all
 	tempvar touse2
 	gen `touse2'=e(sample)
 	matrix treat22 = e(b)
@@ -39,12 +39,12 @@ local replace replace
 foreach k in $lista {
 local label_`k': var lab `k'
 quietly sum `mediana', detail
-rdrobust `k' `varlist' if `mediana' > `r(p50)' & `mediana'!=., c(0) p(1) masspoints(off) vce(hc1) bwselect(cercomb1) covs($covars)  all
+rdrobust `k' `varlist' if `mediana' > `r(p50)' & `mediana'!=., c(0) p(1) vce(hc1) covs($covars)  all
 local bw=e(h_l)
 regsave using "`regs'", t p addlabel(dep,`k',col,"(1)",Ancho_banda,`bw') `replace'
 local replace append
 quietly sum `mediana', detail
-rdrobust `k' `varlist' if `mediana' <= `r(p50)' & `mediana'!=., c(0) p(1) masspoints(off) vce(hc1) bwselect(cercomb1) covs($covars)  all
+rdrobust `k' `varlist' if `mediana' <= `r(p50)' & `mediana'!=., c(0) p(1) vce(hc1) covs($covars)  all
 local bw=e(h_l)
 regsave using "`regs'", t p addlabel(dep,`k',col,"(2)",Ancho_banda,`bw') `replace'
 bootstrap, reps(2): rdcompare `k' `varlist', mediana(`mediana')
@@ -79,11 +79,13 @@ label var col2 "(2)"
 label var col3 "(2)-(1)"
 end
 
-global lista "vote lnp"
+local running "margin"
+local mediana "termssenate"
+global lista "vote lnp" // we can include more than one outcome
 global covars "termshouse"
 
 use https://github.com/rdpackages/rdrobust/raw/master/stata/rdrobust_senate.dta, clear
 gen lnp=ln(population)
 lab var lnp "log Population"
-rdcompareformat margin, mediana(termssenate)
+rdcompareformat `running', mediana(`mediana')
 *export excel using "$tablas\resultados_rdcompare.xlsx", cell(A2) firstrow(varl)

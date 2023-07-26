@@ -98,4 +98,4 @@ use https://github.com/rdpackages/rdrobust/raw/master/stata/rdrobust_senate.dta,
 gen lnp=ln(population)
 lab var lnp "log Population"
 rdcompareformat `running', mediana(`mediana')
-export excel using "C:\Users\Dell\Downloads\resultados_rdcompare.xlsx", cell(A2) firstrow(varl)
+*export excel using "resultados_rdcompare.xlsx", firstrow(varl)

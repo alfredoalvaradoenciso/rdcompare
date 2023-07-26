@@ -1,8 +1,7 @@
+*****RDCOMPARE USING REG SAVE (ADVANCED), we can include more than one outcome variable
 set more off, permanently 
 clear all
 set seed 123
-
-*****RDCOMPARE USING REG SAVE (ADVANCED)
 
 * Program for comparing RD
 capture program drop rdcompare
@@ -74,9 +73,20 @@ foreach k in $lista {
 append using `b`k''
 replace var="`label_`k''" if var=="`k'"
 }
-label var col1 "(1)"
-label var col2 "(2)"
-label var col3 "(2)-(1)"
+label var col1 "Below p(50)"
+label var col2 "Above p(50)"
+label var col3 "Difference"
+label var var "Outcomes"
+cou 
+local N1 = `r(N)'+1
+set obs `N1'
+gen id=_n
+replace col1="(1)" in `N1'
+replace col2="(2)" in `N1'
+replace col3="(2)-(1)" in `N1'
+replace id=0.5 if id==`N1'
+sort id
+drop id 
 end
 
 local running "margin"
@@ -88,4 +98,4 @@ use https://github.com/rdpackages/rdrobust/raw/master/stata/rdrobust_senate.dta,
 gen lnp=ln(population)
 lab var lnp "log Population"
 rdcompareformat `running', mediana(`mediana')
-*export excel using "$tablas\resultados_rdcompare.xlsx", cell(A2) firstrow(varl)
+export excel using "C:\Users\Dell\Downloads\resultados_rdcompare.xlsx", cell(A2) firstrow(varl)
